@@ -1,0 +1,167 @@
+{
+  "$schema": "https://github.com/Azure/data-api-builder/releases/download/v2.1.5/dab.draft.schema.json",
+  "data-source": {
+    "database-type": "mssql",
+    "connection-string": "@env('ACMEKB_CONNECTION_STRING')",
+    "options": {
+      "set-session-context": false
+    }
+  },
+  "runtime": {
+    "rest": {
+      "enabled": true,
+      "path": "/api",
+      "request-body-strict": true
+    },
+    "graphql": {
+      "enabled": false
+    },
+    "mcp": {
+      "enabled": false
+    },
+    "host": {
+      "mode": "development",
+      "cors": {
+        "origins": [
+          "http://localhost:5173"
+        ],
+        "allow-credentials": false
+      },
+      "authentication": {
+        "provider": "Simulator"
+      }
+    }
+  },
+  "entities": {
+    "KnowledgeChunks": {
+      "source": {
+        "object": "dbo.KnowledgeChunks",
+        "type": "table"
+      },
+      "rest": {
+        "enabled": true
+      },
+      "permissions": [
+        {
+          "role": "anonymous",
+          "actions": [ { "action": "read" } ]
+        },
+        {
+          "role": "authenticated",
+          "actions": [ { "action": "read" } ]
+        },
+        {
+          "role": "editor",
+          "actions": [
+            { "action": "read" },
+            {
+              "action": "create",
+              "fields": { "exclude": [ "CreatedAt" ] }
+            },
+            {
+              "action": "update",
+              "fields": { "exclude": [ "CreatedAt" ] }
+            }
+          ]
+        }
+      ]
+    },
+    "ChatSessions": {
+      "source": {
+        "object": "dbo.ChatSessions",
+        "type": "table"
+      },
+      "rest": {
+        "enabled": true
+      },
+      "permissions": [
+        {
+          "role": "anonymous",
+          "actions": [ { "action": "read" } ]
+        },
+        {
+          "role": "authenticated",
+          "actions": [ { "action": "read" } ]
+        },
+        {
+          "role": "editor",
+          "actions": [ { "action": "read" }, { "action": "delete" } ]
+        }
+      ]
+    },
+    "ChatMessages": {
+      "source": {
+        "object": "dbo.ChatMessages",
+        "type": "table"
+      },
+      "rest": {
+        "enabled": true
+      },
+      "permissions": [
+        {
+          "role": "anonymous",
+          "actions": [ { "action": "read" } ]
+        },
+        {
+          "role": "authenticated",
+          "actions": [ { "action": "read" } ]
+        },
+        {
+          "role": "editor",
+          "actions": [ { "action": "read" } ]
+        }
+      ]
+    },
+    "ExecuteOllamaSkillEngine": {
+      "source": {
+        "type": "stored-procedure",
+        "object": "dbo.sp_ExecuteOllamaSkillEngine",
+        "parameters": [
+          {
+            "name": "UserPrompt",
+            "required": true,
+            "description": "User prompt text"
+          },
+          {
+            "name": "SessionID",
+            "required": false,
+            "description": "Existing conversation session (pass on follow-up prompts; omit for the first prompt)"
+          },
+          {
+            "name": "EnableLogging",
+            "required": false,
+            "description": "Write to OllamaLogs",
+            "default": "true"
+          },
+          {
+            "name": "MaxIterations",
+            "required": false,
+            "description": "Max tool loop iterations (clamped to 1..10 by the procedure)",
+            "default": "6"
+          }
+        ]
+      },
+      "rest": {
+        "enabled": true,
+        "methods": [ "post" ]
+      },
+      "graphql": {
+        "enabled": false
+      },
+      "permissions": [
+        {
+          "role": "anonymous",
+          "actions": [ { "action": "execute" } ]
+        },
+        {
+          "role": "authenticated",
+          "actions": [ { "action": "execute" } ]
+        },
+        {
+          "role": "editor",
+          "actions": [ { "action": "execute" } ]
+        }
+      ]
+    }
+  }
+}

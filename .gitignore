@@ -1,0 +1,18 @@
+# Secrets and local settings
+.env
+.env.*
+!.env.example
+*.local
+
+# Build output and dependencies
+bin/
+obj/
+node_modules/
+dist/
+
+# Logs and editor folders
+*.log
+.vs/
+.vscode/
+.idea/
+.claude/
